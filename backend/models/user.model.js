@@ -11,6 +11,19 @@ const userSchema = new Schema(
             unique: true,
             trim:true,
             minlength: true
+        },
+        password: {
+            type: String,
+            required: true,
+            unique: true,
+            trim:true,
+            minlength: 3
+        },
+        email: { 
+            type: String, 
+            required: true, 
+            unique: true, 
+            match: /[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?/
         }
     },
     {

@@ -18,6 +18,7 @@ mongoose.connect(uri, {
     useNewUrlParser : true, 
     useCreateIndex: true,
     useUnifiedTopology:true,
+    useFindAndModify:false, //you should look at this. 
 });
 
 const connection = mongoose.connection;
@@ -36,3 +37,53 @@ app.use('/users', usersRouter);
 app.listen(port, () => {
     console.log('server is running on port: ' + port);
 })
+
+
+
+
+
+//SOCKET OPERATION STARTED!
+
+
+const Document = require('./models/textEditor/document.model');
+
+
+
+const io = require('socket.io')(3001, {
+    cors: {
+        origin: 'http://localhost:2000',
+        methods: ['GET', 'POST']
+    }
+})
+
+io.on("connection" , socket => {
+
+    socket.on("get-document",async documentId=> {
+        const document = await findOrCreateDocument(documentId);
+
+        socket.join(documentId) //we are creating room.
+        socket.emit("load-document",document.data);  //its only running once, no need to add to
+
+        socket.on("send-changes" , delta => {
+            socket.broadcast.to(documentId).emit("receive-changes",delta); //sent data to everyone except sender if there is no "to" function.
+        });
+    
+        socket.on("save-document", async data => {
+            await Document.findByIdAndUpdate(documentId, {data});
+        })
+
+    });
+
+    console.log("connected!")
+});
+
+const defaultValue = "";
+async function findOrCreateDocument(id){
+    if(id == null) return "";
+
+    const document = await Document.findById(id);
+
+    if(document) return document;
+
+    return await Document.create({_id: id , data: defaultValue});
+}

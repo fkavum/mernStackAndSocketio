@@ -37,7 +37,7 @@ router.route('/add').post(
 );
 
 router.route('/:id').get(
-
+    //Exercise.find({_id: req.params.id}).exec().then...
     (req,res) => { 
         Exercise.findById(req.params.id)
         .then(exercise => res.json(exercise))
