@@ -72,9 +72,14 @@ io.on("connection" , socket => {
             await Document.findByIdAndUpdate(documentId, {data});
         })
 
-    });
+        socket.on('disconnect', function(){
+            console.log('user disconnected',documentId);
+        });
 
-    console.log("connected!")
+    });
+   
+  
+    console.log("connected!", socket.id)
 });
 
 const defaultValue = "";

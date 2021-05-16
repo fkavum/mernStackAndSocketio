@@ -30,7 +30,7 @@ export default function TextEditor(){
         setSocket(s);
 
         return () => {
-            s.disconnect();
+            s.disconnect({data:"disconnected user"});
         } 
     },[]);
 
